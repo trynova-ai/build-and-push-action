@@ -21,6 +21,8 @@ type AuthResponse struct {
 }
 
 func getBearerToken(clientId, secret string) (string, error) {
+	log.Println("Getting bearer token...")
+
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", clientId)
@@ -49,10 +51,13 @@ func getBearerToken(clientId, secret string) (string, error) {
 		return "", err
 	}
 
+	log.Println("Bearer token obtained.")
 	return authResp.AccessToken, nil
 }
 
 func updateDockerConfig(token string) error {
+	log.Println("Updating Docker config...")
+
 	configContent := fmt.Sprintf(`{
 		"HttpHeaders" : {
 			"Authorization" : "Bearer %s"
@@ -70,10 +75,17 @@ func updateDockerConfig(token string) error {
 	}
 
 	configFile := filepath.Join(dockerConfigPath, "config.json")
-	return os.WriteFile(configFile, []byte(configContent), 0600)
+	if err := os.WriteFile(configFile, []byte(configContent), 0600); err != nil {
+		return err
+	}
+
+	log.Println("Docker config updated.")
+	return nil
 }
 
 func runDockerBuild(dockerfilePath, dockerfile, imageName, imageTag string) error {
+	log.Println("Building Docker image...")
+
 	var cmd *exec.Cmd
 
 	if dockerfile != "" {
@@ -91,16 +103,27 @@ func runDockerBuild(dockerfilePath, dockerfile, imageName, imageTag string) erro
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	log.Println("Docker image built.")
+	return nil
 }
 
 func runDockerPush(imageName, imageTag string) (string, error) {
+	log.Println("Pushing Docker image...")
+
 	cmd := exec.Command("docker", "push", fmt.Sprintf("%s:%s", imageName, imageTag))
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
-	err := cmd.Run()
-	return out.String(), err
+	if err := cmd.Run(); err != nil {
+		return out.String(), err
+	}
+
+	log.Println("Docker image pushed.")
+	return out.String(), nil
 }
 
 func parseLocation(imageName, imageTag string) string {
@@ -108,6 +131,8 @@ func parseLocation(imageName, imageTag string) string {
 }
 
 func setOutput(name, value string) error {
+	log.Printf("Setting output: %s=%s", name, value)
+
 	cmd := exec.Command("sh", "-c", fmt.Sprintf("echo ::set-output name=%s::%s", name, value))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -115,11 +140,15 @@ func setOutput(name, value string) error {
 }
 
 func main() {
+	log.Println("Starting Docker Push Action...")
+
 	if len(os.Args) != 7 {
 		log.Fatalf("Usage: %s <clientId> <secret> <imageName> <imageTag> <dockerfilePath> <dockerfile>", os.Args[0])
 	}
 
 	clientId, secret, imageName, imageTag, dockerfilePath, dockerfile := os.Args[1], os.Args[2], os.Args[3], os.Args[4], os.Args[5], os.Args[6]
+
+	log.Printf("ClientId: %s, ImageName: %s, ImageTag: %s", clientId, imageName, imageTag)
 
 	token, err := getBearerToken(clientId, secret)
 	if err != nil {
@@ -136,9 +165,9 @@ func main() {
 		log.Fatalf("Failed to build Docker image: %v", err)
 	}
 
-	_, err = runDockerPush(imageName, imageTag)
+	output, err := runDockerPush(imageName, imageTag)
 	if err != nil {
-		log.Fatalf("Failed to push Docker image: %v", err)
+		log.Fatalf("Failed to push Docker image: %v\nOutput: %s", err, output)
 	}
 
 	location := parseLocation(imageName, imageTag)
@@ -146,4 +175,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to set output: %v", err)
 	}
+
+	log.Println("Docker Push Action completed successfully.")
 }

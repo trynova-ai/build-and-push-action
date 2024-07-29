@@ -35,4 +35,4 @@ COPY --from=builder /app/docker-push-action /app/docker-push-action
 RUN chmod +x /app/docker-push-action
 
 # Set the command to run the binary
-CMD ["/app/docker-push-action"]
+ENTRYPOINT ["/app/docker-push-action"]
