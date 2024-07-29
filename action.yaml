@@ -1,0 +1,34 @@
+name: 'Docker Build and Push to Nova AI'
+description: 'GitHub Action to push Docker images with custom authentication'
+inputs:
+  clientId:
+    description: 'Client ID for authentication'
+    required: true
+  secret:
+    description: 'Secret for authentication'
+    required: true
+  imageName:
+    description: 'Docker image name'
+    required: true
+  imageTag:
+    description: 'Docker image tag'
+    required: true
+  dockerfilePath:
+    description: 'Path to the Dockerfile'
+    required: false
+  dockerfile:
+    description: 'Inline Dockerfile content'
+    required: false
+outputs:
+  location:
+    description: 'Location of the uploaded Docker image'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.clientId }}
+    - ${{ inputs.secret }}
+    - ${{ inputs.imageName }}
+    - ${{ inputs.imageTag }}
+    - ${{ inputs.dockerfilePath }}
+    - ${{ inputs.dockerfile }}
