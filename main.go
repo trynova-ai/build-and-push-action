@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	authURL = "https://auth.trynova.ai/realms/default/protocol/openid-connect/token"
+	authURL     = "https://auth.trynova.ai/realms/default/protocol/openid-connect/token"
+	registryURL = "artifacts.trynova.ai"
 )
 
 type AuthResponse struct {
@@ -86,6 +87,8 @@ func updateDockerConfig(token string) error {
 func runDockerBuild(dockerfilePath, dockerfile, imageName, imageTag string) error {
 	log.Println("Building Docker image...")
 
+	fullImageName := fmt.Sprintf("%s/%s:%s", registryURL, imageName, imageTag)
+
 	var cmd *exec.Cmd
 
 	if dockerfile != "" {
@@ -96,7 +99,7 @@ func runDockerBuild(dockerfilePath, dockerfile, imageName, imageTag string) erro
 	}
 
 	if dockerfilePath != "" {
-		cmd = exec.Command("docker", "build", "-f", dockerfilePath, "-t", fmt.Sprintf("%s:%s", imageName, imageTag), ".")
+		cmd = exec.Command("docker", "build", "-f", dockerfilePath, "-t", fullImageName, ".")
 	} else {
 		return fmt.Errorf("either dockerfilePath or dockerfile must be set")
 	}
@@ -107,14 +110,16 @@ func runDockerBuild(dockerfilePath, dockerfile, imageName, imageTag string) erro
 		return err
 	}
 
-	log.Println("Docker image built.")
+	log.Println("Docker image built:", fullImageName)
 	return nil
 }
 
 func runDockerPush(imageName, imageTag string) (string, error) {
 	log.Println("Pushing Docker image...")
 
-	cmd := exec.Command("docker", "push", fmt.Sprintf("%s:%s", imageName, imageTag))
+	fullImageName := fmt.Sprintf("%s/%s:%s", registryURL, imageName, imageTag)
+
+	cmd := exec.Command("docker", "push", fullImageName)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
@@ -122,12 +127,12 @@ func runDockerPush(imageName, imageTag string) (string, error) {
 		return out.String(), err
 	}
 
-	log.Println("Docker image pushed.")
+	log.Println("Docker image pushed:", fullImageName)
 	return out.String(), nil
 }
 
 func parseLocation(imageName, imageTag string) string {
-	return fmt.Sprintf("%s:%s", imageName, imageTag)
+	return fmt.Sprintf("%s/%s:%s", registryURL, imageName, imageTag)
 }
 
 func setOutput(name, value string) error {
