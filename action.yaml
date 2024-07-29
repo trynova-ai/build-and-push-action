@@ -1,5 +1,9 @@
 name: 'Docker Build and Push to Nova AI'
 description: 'GitHub Action to push Docker images with custom authentication'
+# https://actions-cool.github.io/github-action-branding/
+branding:
+  icon: 'cloud-lightning'
+  color: 'green'
 inputs:
   clientId:
     description: 'Client ID for authentication'
