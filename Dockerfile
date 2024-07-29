@@ -1,5 +1,5 @@
 # Use the official Golang image as a build stage
-FROM golang:1.22-bullseye AS base
+FROM golang:1.22-bullseye AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,24 +14,25 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o docker-push-action
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o docker-push-action
 
-# Use the Docker official Docker image as the final stage
-FROM docker:27.1.1-dind
+# Use a smaller base image for the final stage
+FROM alpine:3.16
 
 # Install necessary packages
 RUN apk --no-cache add \
     curl \
-    bash
+    bash \
+    docker-cli
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the binary from the builder stage
-COPY --from=base /app/docker-push-action .
+COPY --from=builder /app/docker-push-action /app/docker-push-action
 
-# Copy any other necessary files
-COPY . .
+# Ensure the binary is executable
+RUN chmod +x /app/docker-push-action
 
-# Run the binary
-ENTRYPOINT ["/app/docker-push-action"]
+# Set the command to run the binary
+CMD ["/app/docker-push-action"]
