@@ -21,7 +21,7 @@ import (
 const (
 	authURL     = "https://auth.trynova.ai/realms/default/protocol/openid-connect/token"
 	registryURL = "registry.trynova.ai"
-	apiURL      = "https://api.trynova.ai/graphql"
+	apiURL      = "https://api.trynova.ai/query"
 )
 
 type AuthResponse struct {
