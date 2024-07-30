@@ -61,7 +61,7 @@ func updateDockerConfig(token string) error {
 
 	configContent := fmt.Sprintf(`{
 		"HttpHeaders" : {
-			"Authorization" : "Bearer %s"
+			"X-Meta-Authorization" : "Bearer %s"
 		}
 	}`, token)
 
