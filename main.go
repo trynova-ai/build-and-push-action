@@ -231,7 +231,7 @@ func addArtifact(token, organization, artifactId, version, url string) error {
 func main() {
 	log.Println("Starting Docker Push Action...")
 
-	if len(os.Args) != 7 {
+	if len(os.Args) != 8 {
 		log.Fatalf("Usage: %s <clientId> <secret> <imageName> <imageTag> <artifactId> <dockerfilePath> <dockerfile>", os.Args[0])
 	}
 
