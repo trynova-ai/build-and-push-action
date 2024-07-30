@@ -5,10 +5,10 @@ FROM golang:1.22-bullseye AS builder
 WORKDIR /app
 
 # Copy go.mod and go.sum files
-COPY go.mod ./
+COPY go.mod go.sum ./
 
 # Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod download
+RUN go mod download && go mod verify
 
 # Copy the source code into the container
 COPY . .

@@ -10,6 +10,7 @@ This GitHub Action allows you to build and push Docker images to Nova AI's conta
 - **secret** (required): Secret for authentication.
 - **imageName** (required): Docker image name.
 - **imageTag** (required): Docker image tag.
+- **artifactId** (required): Nova Artifact ID to associate with the image
 - **dockerfilePath** (optional): Path to the Dockerfile.
 - **dockerfile** (optional): Inline Dockerfile content.
 
@@ -41,6 +42,7 @@ jobs:
           secret: ${{ secrets.NOVA_SECRET }}
           imageName: 'foo'
           imageTag: ${{ github.sha }}
+          artifactId: artifact-group-123
           dockerfile: |
             FROM alpine
             RUN apk add --no-cache curl
@@ -57,6 +59,7 @@ jobs:
 This GitHub Action runs using Docker and requires the following inputs:
 - `clientId` and `secret` for authentication.
 - `imageName` and `imageTag` to specify the Docker image details.
+- `artifactId` to associate the image with the Nova artifact.
 - Either `dockerfilePath` or `dockerfile` must be provided to build the Docker image.
 
 The `clientId` and `secret` should be set as repository secrets in GitHub. You can add these secrets in your repository settings under `Settings > Secrets and variables > Actions`.

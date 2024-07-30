@@ -1,0 +1,17 @@
+# github.com/google/uuid v1.6.0
+## explicit
+github.com/google/uuid
+# github.com/hasura/go-graphql-client v0.13.0
+## explicit; go 1.20
+github.com/hasura/go-graphql-client
+github.com/hasura/go-graphql-client/ident
+github.com/hasura/go-graphql-client/pkg/jsonutil
+# nhooyr.io/websocket v1.8.11
+## explicit; go 1.19
+nhooyr.io/websocket
+nhooyr.io/websocket/internal/bpool
+nhooyr.io/websocket/internal/errd
+nhooyr.io/websocket/internal/util
+nhooyr.io/websocket/internal/wsjs
+nhooyr.io/websocket/internal/xsync
+nhooyr.io/websocket/wsjson

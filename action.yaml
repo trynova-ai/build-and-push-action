@@ -17,6 +17,9 @@ inputs:
   imageTag:
     description: 'Docker image tag'
     required: true
+  artifactId:
+    description: 'Nova Artifact ID to associate with the image'
+    required: true
   dockerfilePath:
     description: 'Path to the Dockerfile'
     required: false
@@ -34,5 +37,6 @@ runs:
     - ${{ inputs.secret }}
     - ${{ inputs.imageName }}
     - ${{ inputs.imageTag }}
+    - ${{ inputs.artifactId }}
     - ${{ inputs.dockerfilePath }}
     - ${{ inputs.dockerfile }}
