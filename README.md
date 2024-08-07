@@ -23,7 +23,7 @@ name: 'Docker Build and Push'
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - development
 
