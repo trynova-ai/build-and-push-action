@@ -36,7 +36,7 @@ jobs:
 
       - name: Docker Push
         id: docker_push
-        uses: trynova-ai/build-and-push-action@v0.0.6
+        uses: trynova-ai/build-and-push-action@v0.0.9
         with:
           clientId: ${{ secrets.NOVA_CLIENT_ID }}
           secret: ${{ secrets.NOVA_SECRET }}
